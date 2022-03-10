@@ -173,15 +173,23 @@ const SurveyForm = () => {
             multiline
           />
         </View>
-        <View style={styles.submitButtonContainer}>
-          <Button
-            title="Send"
-            color="coral"
-            onPress={() => {
-              console.log("pressed");
-            }}
-          />
-        </View>
+        {errors.birthDate ||
+        errors.city ||
+        errors.gender ||
+        errors.nameSurname ||
+        errors.pcrPosCasesAndSymAfterThirdVac ||
+        errors.sideEffectsAfterVac ||
+        errors.vaccineTypeApplied ? null : (
+          <View style={styles.submitButtonContainer}>
+            <Button
+              title="Send"
+              color="coral"
+              onPress={() => {
+                console.log("pressed");
+              }}
+            />
+          </View>
+        )}
       </ScrollView>
     </View>
   );
