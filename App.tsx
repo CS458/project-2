@@ -13,7 +13,7 @@ const App = () => {
     <SafeAreaView style={styles.container}>
       <NavigationContainer>
         <Navigator
-          initialRouteName={ROUTES.Survey}
+          initialRouteName={ROUTES.GettingStarted}
           screenOptions={{ headerShown: false }}
         >
           <Screen name={ROUTES.GettingStarted} component={GettingStarted} />

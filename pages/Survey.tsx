@@ -1,142 +1,165 @@
-import DateTimePicker, { Event } from "@react-native-community/datetimepicker";
-import { useFormik } from "formik";
-import moment from "moment";
-import React, { useState } from "react";
-import { Keyboard, StyleSheet, View } from "react-native";
-import * as yup from "yup";
+import React, { useCallback, useState } from "react";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  DatePickerAndroid,
+} from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import GenderSelect from "../components/GenderSelect";
 import TextInputField from "../components/TextInputField";
-import { GENDERS, NAME_SURNAME_REGEX } from "../config/constants";
+import { ROUTES } from "../config/routes";
 
-const initialValues: {
-  nameSurname: string;
-  birthDate: string;
-  city: string;
-  gender: string;
-  vaccineApplied: string;
-  sideEffectsAfterVac: string;
-  pcrPosCasesAndSymAfter3rdVac: string;
-} = {
-  nameSurname: "",
-  birthDate: "Not Set",
-  city: "",
-  gender: "Not Set",
-  vaccineApplied: "",
-  sideEffectsAfterVac: "",
-  pcrPosCasesAndSymAfter3rdVac: "",
-};
+import BirthDatePicker from "../components/BirthDatePicker";
 
-const validationSchema = yup.object({
-  nameSurname: yup
-    .string()
-    .required("Name Surname is required.")
-    .matches(NAME_SURNAME_REGEX, "Name Surname is not valid."),
-  birthDate: yup.string().required("Birth date is required."),
-  city: yup.string().required("City is required."),
-  gender: yup
-    .string()
-    .label("Gender")
-    .oneOf(GENDERS)
-    .required("Gender is required."),
-  vaccineApplied: yup.string().required("Vaccine Type applied is required."),
-  sideEffectsAfterVac: yup.string(),
-  pcrPosCasesAndSymAfter3rdVac: yup.string(),
-});
+const Survey = (props: any) => {
+  const [nameSurname, setNameSurname] = useState("");
+  const [nameSurnameError, setNameSurnameError] = useState("");
 
-const Survey = () => {
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [city, setCity] = useState("");
+  const [cityError, setCityError] = useState("");
 
-  const onSubmit = (formValues: any) => {
-    console.log(formValues);
-  };
+  const [gender, setGender] = useState(-1);
+  const [genderError, setGenderError] = useState("");
 
-  const {
-    errors,
-    handleChange,
-    handleSubmit,
-    isSubmitting,
-    isValid,
-    touched,
-    values,
-  } = useFormik({
-    initialValues,
-    validationSchema,
-    onSubmit,
-  });
+  const [vaccineApplied, setVaccineApplied] = useState("");
+  const [vaccineAppliedError, setVaccineAppliedError] = useState("");
+
+  const [sideEffectsAfterVac, setSideEffectsAfterVac] = useState("");
+  const [pcrPosCasesAndSymAfter3rdVac, setPcrPosCasesAndSymAfter3rdVac] =
+    useState("");
+
+  const validateNameSurname = useCallback(() => {
+    const regex =
+      /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u;
+    const isValid = regex.test(nameSurname);
+    return isValid;
+  }, []);
+
+  const validateBirthDate = useCallback((birthDate: string) => {
+    return birthDate !== "Not Set";
+  }, []);
+
+  const setNameSurnameErrorMessage = useCallback(() => {
+    if (validateNameSurname()) {
+      setNameSurnameError("");
+    } else {
+      setNameSurnameError("Name Surname is not valid.");
+    }
+  }, []);
+
+  const validateCity = useCallback(() => {
+    return city.trim().length !== 0;
+  }, []);
+
+  const setCityErrorMessage = useCallback(() => {
+    if (validateCity()) {
+      setCityError("");
+    } else {
+      setCityError("City is required.");
+    }
+  }, []);
+
+  const validateGender = useCallback(() => {
+    return gender !== -1;
+  }, []);
+
+  const setGenderErrorMessage = useCallback(() => {
+    if (validateGender()) {
+      setGenderError("");
+    } else {
+      setGenderError("Gender is required");
+    }
+  }, []);
+
+  const validateVaccineApplied = useCallback(() => {
+    return vaccineApplied.trim().length !== 0;
+  }, []);
+
+  const setVaccineAppliedErrorMessage = useCallback(() => {
+    if (validateVaccineApplied()) {
+      setVaccineAppliedError("");
+    } else {
+      setVaccineAppliedError("Vaccine Applied is required.");
+    }
+  }, []);
+
+  const areFieldsValid = useCallback(() => {
+    return (
+      validateNameSurname() &&
+      validateCity() &&
+      validateGender() &&
+      validateVaccineApplied()
+    );
+  }, []);
+
+  const onSubmit = useCallback(() => {
+    props.navigation.push(ROUTES.Success);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <TextInputField
-        label="Name Surname"
-        placeholder="Name and Surname"
-        onChangeText={handleChange("nameSurname")}
-        value={values.nameSurname}
-        errorMessage={errors.nameSurname}
-      />
-      <TextInputField
-        label="Birth Date"
-        placeholder="Birth Date"
-        value={
-          values.birthDate === "Not Set"
-            ? "Not Set"
-            : values.birthDate.toString()
-        }
-        onFocus={() => {
-          Keyboard.dismiss();
-          setIsDatePickerVisible(true);
-        }}
-        errorMessage={errors.nameSurname}
-      />
-      {isDatePickerVisible && (
-        <DateTimePicker
-          value={new Date(values.birthDate)}
-          mode={"date"}
-          display="default"
-          onChange={(event: Event, date: Date | undefined) => {
-            if (date) {
-              handleChange("birthDate")(moment(date).format("YYYY-MM-DD"));
-            } else {
-              handleChange("birthDate")("Not Set");
+      <ScrollView style={styles.scroll}>
+        <Text style={styles.header}>Survey</Text>
+        <TextInputField
+          label="Name Surname"
+          placeholder="Name and Surname"
+          onChangeText={(text) => setNameSurname(text)}
+          value={nameSurname}
+          errorMessage={nameSurnameError}
+          onBlur={setNameSurnameErrorMessage}
+        />
+        <BirthDatePicker validateBirthDate={validateBirthDate} />
+        <TextInputField
+          label="City"
+          placeholder="City"
+          onChangeText={(text) => setCity(text)}
+          value={city}
+          errorMessage={cityError}
+          onBlur={setCityErrorMessage}
+        />
+        <GenderSelect
+          label="Gender"
+          selectedIndex={gender}
+          onPress={(value) => {
+            if (value !== -1) {
+              setGender(value);
+              setGenderError("");
             }
-            setIsDatePickerVisible(false);
+          }}
+          containerStyle={{ marginBottom: 20 }}
+          error={genderError}
+        />
+        <TextInputField
+          label="Vaccine Type Applied"
+          placeholder="Vaccine Type Applied"
+          onChangeText={(text) => setVaccineApplied(text)}
+          value={vaccineApplied}
+          errorMessage={vaccineAppliedError}
+          onBlur={() => {
+            setGenderErrorMessage();
+            setVaccineAppliedErrorMessage();
           }}
         />
-      )}
-      <TextInputField
-        label="City"
-        placeholder="City"
-        onChangeText={handleChange("city")}
-        value={values.city}
-        errorMessage={errors.city}
-      />
-      <GenderSelect
-        label="Gender"
-        selectedIndex={GENDERS.findIndex((gender) => gender === values.gender)}
-        onPress={(value) => handleChange("gender")(GENDERS[value])}
-        containerStyle={{ marginBottom: 20 }}
-        error={errors.gender}
-      />
-      <TextInputField
-        label="Vaccine Type Applied"
-        placeholder="Vaccine Type Applied"
-        onChangeText={handleChange("vaccineApplied")}
-        value={values.vaccineApplied}
-        errorMessage={errors.vaccineApplied}
-      />
-      <TextInputField
-        label="Any Side Effect After Vaccination"
-        placeholder="Side Effects After Vaccinations"
-        onChangeText={handleChange("sideEffectsAfterVac")}
-        value={values.sideEffectsAfterVac}
-        errorMessage={errors.sideEffectsAfterVac}
-      />
-      <TextInputField
-        label="PCR Positive Cases &#38; Covid-19 Symptoms After 3rd Vaccination"
-        placeholder="PCR Positive Cases and Symptoms"
-        onChangeText={handleChange("pcrPosCasesAndSymAfter3rdVac")}
-        value={values.pcrPosCasesAndSymAfter3rdVac}
-        errorMessage={errors.pcrPosCasesAndSymAfter3rdVac}
-      />
+        <TextInputField
+          label="Any Side Effect After Vaccination"
+          placeholder="Side Effects After Vaccinations"
+          onChangeText={(text) => setSideEffectsAfterVac(text)}
+          value={sideEffectsAfterVac}
+        />
+        <TextInputField
+          label="PCR Positive Cases &#38; Covid-19 Symptoms After 3rd Vaccination"
+          placeholder="PCR Positive Cases and Symptoms"
+          onChangeText={(text) => setPcrPosCasesAndSymAfter3rdVac(text)}
+          value={pcrPosCasesAndSymAfter3rdVac}
+        />
+        {areFieldsValid() ? (
+          <View style={styles.buttonContainer}>
+            <Button color="coral" title="Submit" onPress={onSubmit} />
+          </View>
+        ) : null}
+      </ScrollView>
     </View>
   );
 };
@@ -146,10 +169,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
+    paddingTop: 25,
+  },
+  header: {
+    fontSize: 22,
+    color: "coral",
+    marginTop: 40,
+    marginBottom: 20,
+    width: "100%",
+  },
+  scroll: {
+    flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
   },
-  genderCheckBoxesContainer: {},
+  buttonContainer: {
+    marginTop: 20,
+  },
 });
 
 export default Survey;

@@ -10,10 +10,15 @@ type Props = {
 
 const GenderSelect = (props: Props) => {
   const { label, error, ...rest } = props;
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <ButtonGroup {...rest} buttons={GENDERS} />
+      <ButtonGroup
+        {...rest}
+        buttons={GENDERS}
+        selectedButtonStyle={styles.buttonGroup}
+      />
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
@@ -26,6 +31,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginLeft: 10,
+  },
+  buttonGroup: {
+    backgroundColor: "coral",
   },
   error: {
     color: "red",
