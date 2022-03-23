@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Button,
   StyleSheet,
   Text,
   View,
-  DatePickerAndroid,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from "react-native-gesture-handler";
 import GenderSelect from "../components/GenderSelect";
 import TextInputField from "../components/TextInputField";
@@ -30,73 +30,122 @@ const Survey = (props: any) => {
   const [pcrPosCasesAndSymAfter3rdVac, setPcrPosCasesAndSymAfter3rdVac] =
     useState("");
 
-  const validateNameSurname = useCallback(() => {
+  const [dob, setDob] = useState("");
+
+  const updateDob = (newDate: any) => {
+    setDob(newDate);
+  }
+
+  useEffect(() => {
+    setInitialValues().then(r => {
+      const {name, cityTemp, genderTemp, dobTemp, vac, side, pcr} = r;
+      setNameSurname(name);
+      setCity(cityTemp);
+      setGender(genderTemp);
+      setDob(dobTemp);
+      setVaccineApplied(vac);
+      setSideEffectsAfterVac(side);
+      setPcrPosCasesAndSymAfter3rdVac(pcr);
+    }).then(()=> setEditFalse());
+  }, [])
+
+  const setEditFalse = async () => {await AsyncStorage.setItem('edit', "false")}
+
+  const setInitialValues = async () => {
+    let edit = await AsyncStorage.getItem('edit');
+    let name = '', cityTemp = '', dobTemp = 'Not Set', vac = '', side = '', pcr = '', genderTemp = -1;
+    if (edit === 'true'){
+      name = await AsyncStorage.getItem('nameSurname') || "";
+      cityTemp = await AsyncStorage.getItem('city') || "";
+      genderTemp = Number(await AsyncStorage.getItem("gender") || -1);
+      dobTemp = JSON.parse(await AsyncStorage.getItem('dob') || 'Not Set');
+      vac = await AsyncStorage.getItem('vaccineApplied') || '';
+      side = await AsyncStorage.getItem('sideEffectsAfterVac') || '';
+      pcr = await AsyncStorage.getItem('pcrPosCasesAndSymAfter3rdVac') || '';
+    }
+    return {name, cityTemp, genderTemp, dobTemp, vac, side, pcr};
+  }
+
+  const validateNameSurname = () => {
     const regex =
       /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u;
     const isValid = regex.test(nameSurname);
     return isValid;
-  }, []);
+  };
 
-  const validateBirthDate = useCallback((birthDate: string) => {
-    return birthDate !== "Not Set";
-  }, []);
+  const validateBirthDate = () => {
+    return dob !== "Not Set";
+  };
 
-  const setNameSurnameErrorMessage = useCallback(() => {
+  const setNameSurnameErrorMessage = () => {
     if (validateNameSurname()) {
       setNameSurnameError("");
     } else {
       setNameSurnameError("Name Surname is not valid.");
     }
-  }, []);
+  };
 
-  const validateCity = useCallback(() => {
+  const validateCity = () => {
     return city.trim().length !== 0;
-  }, []);
+  };
 
-  const setCityErrorMessage = useCallback(() => {
+  const setCityErrorMessage = () => {
     if (validateCity()) {
       setCityError("");
     } else {
       setCityError("City is required.");
     }
-  }, []);
+  };
 
-  const validateGender = useCallback(() => {
+  const validateGender = () => {
     return gender !== -1;
-  }, []);
+  };
 
-  const setGenderErrorMessage = useCallback(() => {
+  const setGenderErrorMessage = () => {
     if (validateGender()) {
       setGenderError("");
     } else {
       setGenderError("Gender is required");
     }
-  }, []);
+  };
 
-  const validateVaccineApplied = useCallback(() => {
+  const validateVaccineApplied = () => {
     return vaccineApplied.trim().length !== 0;
-  }, []);
+  };
 
-  const setVaccineAppliedErrorMessage = useCallback(() => {
+  const setVaccineAppliedErrorMessage = () => {
     if (validateVaccineApplied()) {
       setVaccineAppliedError("");
     } else {
       setVaccineAppliedError("Vaccine Applied is required.");
     }
-  }, []);
+  };
 
-  const areFieldsValid = useCallback(() => {
+  const areFieldsValid = () => {
     return (
       validateNameSurname() &&
       validateCity() &&
       validateGender() &&
-      validateVaccineApplied()
+      validateVaccineApplied() &&
+      validateBirthDate()
     );
-  }, []);
+  };
 
-  const onSubmit = useCallback(() => {
+  const persistFormInfo = async () => {
+    await AsyncStorage.setItem('nameSurname', nameSurname);
+    await AsyncStorage.setItem('city', city);
+    await AsyncStorage.setItem('gender', String(gender));
+    await AsyncStorage.setItem('dob', JSON.stringify(dob));
+    await AsyncStorage.setItem('vaccineApplied', vaccineApplied);
+    await AsyncStorage.setItem('sideEffectsAfterVac', sideEffectsAfterVac);
+    await AsyncStorage.setItem('pcrPosCasesAndSymAfter3rdVac', pcrPosCasesAndSymAfter3rdVac);
+    await AsyncStorage.setItem('edit', "false");
+  }
+
+  const onSubmit = async () => {
+    await persistFormInfo();
     props.navigation.push(ROUTES.Success);
-  }, []);
+  };
 
   return (
     <View style={styles.container}>
@@ -110,7 +159,7 @@ const Survey = (props: any) => {
           errorMessage={nameSurnameError}
           onBlur={setNameSurnameErrorMessage}
         />
-        <BirthDatePicker validateBirthDate={validateBirthDate} />
+        <BirthDatePicker validateBirthDate={validateBirthDate} updateDob={updateDob} value={dob} />
         <TextInputField
           label="City"
           placeholder="City"

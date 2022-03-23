@@ -11,7 +11,7 @@ const TextInputField = (props: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <Input {...rest} />
+      <Input autoCapitalize={"words"} {...rest} />
     </View>
   );
 };

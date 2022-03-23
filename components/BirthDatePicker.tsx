@@ -1,14 +1,24 @@
 import moment from "moment";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, StyleSheet } from "react-native";
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 
-const BirthDatePicker = (props: { validateBirthDate: any }) => {
+const BirthDatePicker = (props: { validateBirthDate?: any, updateDob?: any, value?: any }) => {
   const [isDatePicker, setIsDatePicker] = useState(false);
   const [birthDate, setBirthDate] = useState<any>("Not Set");
   const [birthDateError, setBirthDateError] = useState("");
+
+  useEffect(() => {
+    if (props.value) setBirthDate(props.value);
+  }, [props.value])
+
+  const tenYrsOld = () => {
+    let date = new Date();
+    date.setFullYear(date.getFullYear() - 10);
+    return date;
+  }
 
   const datePickerValue =
     birthDate !== "Not Set" ? moment(birthDate).toDate() : new Date();
@@ -25,13 +35,14 @@ const BirthDatePicker = (props: { validateBirthDate: any }) => {
         <RNDateTimePicker
           mode="date"
           value={datePickerValue}
-          maximumDate={new Date()}
+          maximumDate={tenYrsOld()}
           onChange={(event: DateTimePickerEvent, date: Date | undefined) => {
             // It is important to set the state here and then set the date, otherwise the date picker will open twice because of rerender queue
             setIsDatePicker(false);
             if (event.type === "set") {
               setBirthDate(date);
               setBirthDateError("");
+              props.updateDob(date);
             } else {
               setBirthDate("Not Set");
               setBirthDateError("Birth Date is required.");
