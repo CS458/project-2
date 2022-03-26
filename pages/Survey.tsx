@@ -150,7 +150,7 @@ const Survey = (props: any) => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scroll}>
-        <Text style={styles.header}>Survey</Text>
+        <Text style={styles.header} accessibilityLabel={'success'}>Survey</Text>
         <TextInputField
           label="Name Surname"
           placeholder="Name and Surname"
@@ -158,6 +158,7 @@ const Survey = (props: any) => {
           value={nameSurname}
           errorMessage={nameSurnameError}
           onBlur={setNameSurnameErrorMessage}
+          accessibilityLabel={'nameSurname'}
         />
         <BirthDatePicker validateBirthDate={validateBirthDate} updateDob={updateDob} value={dob} />
         <TextInputField
@@ -167,6 +168,7 @@ const Survey = (props: any) => {
           value={city}
           errorMessage={cityError}
           onBlur={setCityErrorMessage}
+          accessibilityLabel={'city'}
         />
         <GenderSelect
           label="Gender"
@@ -190,22 +192,25 @@ const Survey = (props: any) => {
             setGenderErrorMessage();
             setVaccineAppliedErrorMessage();
           }}
+          accessibilityLabel={'vaccineApplied'}
         />
         <TextInputField
           label="Any Side Effect After Vaccination"
           placeholder="Side Effects After Vaccinations"
           onChangeText={(text) => setSideEffectsAfterVac(text)}
           value={sideEffectsAfterVac}
+          accessibilityLabel={'sideEffects'}
         />
         <TextInputField
           label="PCR Positive Cases &#38; Covid-19 Symptoms After 3rd Vaccination"
           placeholder="PCR Positive Cases and Symptoms"
           onChangeText={(text) => setPcrPosCasesAndSymAfter3rdVac(text)}
           value={pcrPosCasesAndSymAfter3rdVac}
+          accessibilityLabel={'pcr'}
         />
         {areFieldsValid() ? (
           <View style={styles.buttonContainer}>
-            <Button color="coral" title="Submit" onPress={onSubmit} />
+            <Button color="coral" title="Submit" onPress={onSubmit} accessibilityLabel={'submitBtn'} />
           </View>
         ) : null}
       </ScrollView>

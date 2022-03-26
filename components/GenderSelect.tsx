@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {Button, StyleSheet, Text, View} from "react-native";
 import { ButtonGroup, ButtonGroupProps } from "react-native-elements";
 import { GENDERS } from "../config/constants";
 
@@ -12,7 +12,7 @@ const GenderSelect = (props: Props) => {
   const { label, error, ...rest } = props;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessible={true}>
       <Text style={styles.label}>{label}</Text>
       <ButtonGroup
         {...rest}

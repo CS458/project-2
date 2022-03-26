@@ -26,7 +26,7 @@ const BirthDatePicker = (props: { validateBirthDate?: any, updateDob?: any, valu
   return (
     <View style={styles.container}>
       <Text style={styles.birthDate}>Birth Date</Text>
-      <Text style={styles.birthDateValue} onPress={() => setIsDatePicker(true)}>
+      <Text style={styles.birthDateValue} onPress={() => setIsDatePicker(true)} accessibilityLabel={'datePickerField'}>
         {moment(birthDate).isValid()
           ? moment(birthDate).format("DD/MM/YYYY")
           : "Not Set"}

@@ -48,19 +48,21 @@ const Success = ({navigation}: any) => {
       <View style={styles.container}>
         <ScrollView style={styles.scroll}>
           <View style={styles.msg}>
-            <Text style={styles.header}>Survey Answers</Text>
+            <Text style={styles.header} accessibilityLabel={'success'}>Survey Answers</Text>
             <Ionicons name="md-checkmark-circle" size={32} color="green" style={{marginLeft: 10}} />
           </View>
           <TextInputField
               label="Name Surname"
               value={nameSurname}
               disabled={true}
+              accessibilityLabel={'nameSurname'}
           />
           <BirthDatePicker value={dob} />
           <TextInputField
               label="City"
               value={city}
               disabled={true}
+              accessibilityLabel={'city'}
           />
           <GenderSelect
               label="Gender"
@@ -72,19 +74,22 @@ const Success = ({navigation}: any) => {
               label="Vaccine Type Applied"
               value={vaccineApplied}
               disabled={true}
+              accessibilityLabel={'vaccineApplied'}
           />
           <TextInputField
               label="Any Side Effect After Vaccination"
               value={sideEffectsAfterVac}
               disabled={true}
+              accessibilityLabel={'sideEffects'}
           />
           <TextInputField
               label="PCR Positive Cases &#38; Covid-19 Symptoms After 3rd Vaccination"
               value={pcrPosCasesAndSymAfter3rdVac}
               disabled={true}
+              accessibilityLabel={'pcr'}
           />
           <View style={styles.buttonContainer}>
-            <Button color="coral" title="Edit Survey" onPress={async () => {
+            <Button color="coral" title="Edit Survey" accessibilityLabel={'editBtn'} onPress={async () => {
               await AsyncStorage.setItem('edit', "true")
               navigation.push(ROUTES.Survey);
             }} />

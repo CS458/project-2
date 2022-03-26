@@ -13,9 +13,10 @@ const GettingStarted = (props: any) => {
       </View>
       <View style={styles.buttonContainer}>
         <Button
-          color="coral"
-          title="Start Survey"
-          onPress={() => {
+            accessibilityLabel={'startBtn'}
+            color="coral"
+            title="Start Survey"
+            onPress={() => {
             props.navigation.push(ROUTES.Survey);
           }}
         />
