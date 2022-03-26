@@ -69,7 +69,8 @@ async function setTenYrsAgoDateValue(leaveEmpty = false) {
     ];
     let date = new Date();
     date.setFullYear(date.getFullYear() - 10);
-    await setDateValue(`${date.getDate()}`, `${monthNames[date.getMonth()]}`, `${date.getFullYear()}`, leaveEmpty);
+    let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+    await setDateValue(`${day}`, `${monthNames[date.getMonth()]}`, `${date.getFullYear()}`, leaveEmpty);
 }
 
 async function getGenderBtn(value) {

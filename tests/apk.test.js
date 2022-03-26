@@ -95,7 +95,8 @@ describe('TestCase3', () => {
         ];
         let date = new Date();
         date.setFullYear(date.getFullYear() - 10);
-        let dateToTest = await testHelpers.getElement(`${date.getDate() + 1} ${monthNames[date.getMonth()]} ${date.getFullYear()}`);
+        let day = date.getDate() + 1 < 10 ? `0${date.getDate() + 1}` : date.getDate() + 1;
+        let dateToTest = await testHelpers.getElement(`${day} ${monthNames[date.getMonth()]} ${date.getFullYear()}`);
         let isEnabled = await dateToTest.isEnabled();
         assert.strictEqual(isEnabled, false);
     });
