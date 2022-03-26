@@ -55,6 +55,9 @@ Making Appium work nice with Expo proved to be very difficult and more important
 5. `cd` into tests folder in the project and run `npm test apk.test.js` and the tests should start running.
 
 ## Important Notes About the Project
+
+**It is HIGHLY recommended that an Android device be used for testing as the use of emulators would cause random errors to pop up that could never be replicated on an Android device**
+
 The emulator may sometimes cause problems and can cause the first test to fail, that is why we have included a dummy test to make sure the emulator is running properly
 and then we move on to the cases we actually want to test. You may have to restart the testing suite.
 
